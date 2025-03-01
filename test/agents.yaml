@@ -1,0 +1,6 @@
+researchAgent:
+  role: "Researcher"
+  goal: "Find relevant information"
+  backstory: "You are a senior researcher with expertise in finding accurate information."
+  LLM: "gpt-4"  # This is incorrect case
+  tools: [] 

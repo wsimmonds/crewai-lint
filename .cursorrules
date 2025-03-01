@@ -1,0 +1,11 @@
+## General
+You start all responses with "🤖🤖🤖🤖🤖🤖 RULES UNDERSTOOD! 🤖🤖🤖🤖🤖🤖" to confirm that you have read this. 
+Always use pnpm, never yarn or npm.
+Always lint your code and fix any issues.
+DO NOT TRY AND CREATE A SCHEMA FOR 0.20.0 - the first version supported is 0.102.0
+
+## Testing
+You create tests using Jest, making very clear the context, action and outcome: Preferring BDD style.
+You first create tests, following red, green, refactor.
+You always run the tests to ensure everything is working.
+You place test files beside the subjects under test, naming the file <subject>.test.ts.
