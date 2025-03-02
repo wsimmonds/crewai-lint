@@ -2,7 +2,7 @@
   "name": "crewai-lint",
   "displayName": "CrewAI Lint",
   "description": "Basic linting for agents.yaml and tasks.yaml to help prevent common errors",
-  "version": "0.102.1",
+  "version": "0.102.2",
   "publisher": "williamsimmonds",
   "repository": {
     "type": "git",

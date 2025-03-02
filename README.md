@@ -22,12 +22,13 @@ CrewAI Lint helps developers working with [CrewAI](https://github.com/crewAIInc/
 
 The following are known issues/planned to be resolved. Feedback and contributions are always welcome.
 
-- [ ] No validation of field values (i.e. checking to ensure specified agent is valid/present in crew)
+- [ ] No validation of field values except for checking agent is valid (i.e. should check context provided is valid, etc.)
 - [ ] No support for anything but 0.102.0
 - [ ] No support for Python validation
 - [ ] No support for running as script/part of CI
-- [ ] No icon!
-- [ ] Need to re-visit a number of design choices and make it easier to accurately update/maintain schemas
+- [ ] No icon
+- [ ] Need to re-visit a number of design choices and make it easier to accurately update/maintain schemas - likely adopt ajv
+- [ ] Need to improve test cases and adopt more "outside in" tests of schemas/expected outcomes to make changing internals easier
 
 ## Installation
 
