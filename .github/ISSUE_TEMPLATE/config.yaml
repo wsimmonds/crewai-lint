@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Ask a Question
+    url: https://github.com/wsimmonds/crewai-lint/discussions/new?category=q-a 
+    about: Please ask general questions in the Discussions tab.
