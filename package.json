@@ -2,12 +2,15 @@
   "name": "crewai-lint",
   "displayName": "CrewAI Lint",
   "description": "Basic linting for agents.yaml and tasks.yaml to help prevent common errors",
-  "version": "0.102.0",
+  "version": "0.102.1",
   "publisher": "williamsimmonds",
   "repository": {
     "type": "git",
     "url": "https://github.com/wsimmonds/crewai-lint"
   },
+  "bundleDependencies": [
+    "js-yaml"
+  ],
   "engines": {
     "vscode": "^1.96.0"
   },
@@ -27,18 +30,26 @@
           "tasks.yaml"
         ]
       }
+    ],
+    "commands": [
+      {
+        "command": "crewai-lint.setVersion",
+        "title": "CrewAI: Set Schema Version"
+      }
     ]
   },
+  "files": [
+    "out/**/*.js",
+    "out/schemas/**/*.js"
+  ],
   "scripts": {
     "vscode:prepublish": "pnpm run compile",
     "compile": "tsc -p ./",
     "watch": "tsc -watch -p ./",
-    "pretest": "pnpm run compile",
-    "lint": "eslint src",
-    "test": "jest",
-    "test:watch": "jest --watch",
-    "test:coverage": "jest --coverage",
-    "package": "pnpm run compile && echo \"y\" | pnpm dlx vsce package --no-dependencies"
+    "build": "tsc -p ./",
+    "bundle-deps": "node bundle-dependencies.js",
+    "package": "pnpm run compile && pnpm run bundle-deps && echo \"y\" | pnpm dlx vsce package --no-dependencies",
+    "test": "jest --passWithNoTests"
   },
   "devDependencies": {
     "@types/jest": "^29.5.14",
@@ -50,7 +61,9 @@
     "@vscode/test-cli": "^0.0.10",
     "@vscode/test-electron": "^2.4.1",
     "@vscode/vsce": "^2.23.0",
+    "esbuild": "^0.25.0",
     "eslint": "^8.57.0",
+    "glob": "^11.0.1",
     "jest": "^29.7.0",
     "ts-jest": "^29.1.2",
     "typescript": "5.4.5"

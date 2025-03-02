@@ -7,6 +7,13 @@ import * as path from 'path';
 jest.mock('./versionDetection');
 jest.mock('fs/promises');
 
+// Mock fs.stat
+(fs.stat as jest.Mock) = jest.fn().mockImplementation(() => {
+  return Promise.resolve({
+    isDirectory: () => true
+  });
+});
+
 // Create mock schema
 const mockSchema = {
   version: '0.102.0',
@@ -132,7 +139,7 @@ describe('SchemaManager', () => {
       expect(result.valid).toBe(true);
     });
     
-    it('should return error if no schema available', async () => {
+    it('should return error if no schema found', async () => {
       // Arrange - wait for loadSchemas to complete
       await new Promise(process.nextTick);
       // Set up the manager to have no schemas
@@ -143,7 +150,8 @@ describe('SchemaManager', () => {
       
       // Assert
       expect(result.valid).toBe(false);
-      expect(result.errors[0].message).toContain('No schema available');
+      expect(result.errors[0].message).toContain('CrewAI Lint: No schema found. If first install of extension, try closing/re-opening file.');
+      expect(result.errors[0].severity).toBe('info');
     });
   });
   
@@ -163,6 +171,31 @@ describe('SchemaManager', () => {
       // Assert
       expect(mockSchema.validateTask).toHaveBeenCalledWith(mockTaskData);
       expect(result.valid).toBe(true);
+    });
+  });
+  
+  describe('prefixValidationMessages', () => {
+    it('should add CrewAI Lint prefix to all validation messages', async () => {
+      // Arrange
+      await new Promise(process.nextTick);
+      // Create a mock validation result
+      const mockOriginal = { 
+        valid: false, 
+        errors: [
+          { field: "field1", message: "Original error", severity: "error" },
+          { field: "field2", message: "CrewAI Lint: Already prefixed", severity: "warning" }
+        ] 
+      };
+      
+      // Get access to the private method using any type
+      const prefixMethod = (schemaManager as any).prefixValidationMessages.bind(schemaManager);
+      
+      // Act
+      const result = prefixMethod(mockOriginal);
+      
+      // Assert
+      expect(result.errors[0].message).toBe("CrewAI Lint: Original error");
+      expect(result.errors[1].message).toBe("CrewAI Lint: Already prefixed");
     });
   });
   

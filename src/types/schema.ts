@@ -6,7 +6,7 @@ export interface ValidationResult {
   export interface ValidationError {
     message: string;
     field: string;
-    severity: 'error' | 'warning';
+    severity: 'error' | 'warning' | 'info';
   }
   
   export interface FieldDefinition {

@@ -24,6 +24,12 @@ export class SchemaManager {
       const versionDirs = await fs.readdir(schemaDir);
       
       for (const versionDir of versionDirs) {
+        // Skip test files and non-directories
+        if (versionDir.includes('.test.') || versionDir.endsWith('.map') || 
+            !(await fs.stat(path.join(schemaDir, versionDir))).isDirectory()) {
+          continue;
+        }
+
         try {
           // Import the schema from the version directory
           const schemaModule = await import(`./schemas/${versionDir}/index`);
@@ -40,6 +46,22 @@ export class SchemaManager {
       // Set latest as alias to the most recent version
       const schemas = Array.from(this.schemas.values());
       if (schemas.length > 0) {
+        // Sort schemas by version (assuming semver-like format)
+        schemas.sort((a, b) => {
+          const aVersion = a.version.split('.').map(Number);
+          const bVersion = b.version.split('.').map(Number);
+          
+          for (let i = 0; i < Math.max(aVersion.length, bVersion.length); i++) {
+            const aVal = aVersion[i] || 0;
+            const bVal = bVersion[i] || 0;
+            if (aVal !== bVal) {
+              return aVal - bVal;
+            }
+          }
+          
+          return 0;
+        });
+        
         this.schemas.set('latest', schemas[schemas.length - 1]);
       }
     } catch (err) {
@@ -76,9 +98,12 @@ export class SchemaManager {
   validateAgent(data: any): ValidationResult {
     const schema = this.getCurrentSchema();
     if (!schema) {
-      return { valid: false, errors: [{ field: "", message: "No schema available", severity: "error" }] };
+      return { valid: false, errors: [{ field: "", message: "CrewAI Lint: No schema found. If first install of extension, try closing/re-opening file.", severity: "info" }] };
     }
-    return schema.validateAgent(data);
+    
+    // Add prefix to all error messages
+    const result = schema.validateAgent(data);
+    return this.prefixValidationMessages(result);
   }
   
   /**
@@ -87,9 +112,25 @@ export class SchemaManager {
   validateTask(data: any): ValidationResult {
     const schema = this.getCurrentSchema();
     if (!schema) {
-      return { valid: false, errors: [{ field: "", message: "No schema available", severity: "error" }] };
+      return { valid: false, errors: [{ field: "", message: "CrewAI Lint: No schema found. If first install of extension, try closing/re-opening file.", severity: "info" }] };
     }
-    return schema.validateTask(data);
+    
+    // Add prefix to all error messages
+    const result = schema.validateTask(data);
+    return this.prefixValidationMessages(result);
+  }
+  
+  /**
+   * Add "CrewAI Lint: " prefix to all validation messages
+   */
+  private prefixValidationMessages(result: ValidationResult): ValidationResult {
+    return {
+      ...result,
+      errors: result.errors.map(error => ({
+        ...error,
+        message: error.message.startsWith("CrewAI Lint: ") ? error.message : `CrewAI Lint: ${error.message}`
+      }))
+    };
   }
   
   /**

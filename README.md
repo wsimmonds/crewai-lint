@@ -179,4 +179,4 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 ## Acknowledgments
 
 - [CrewAI](https://github.com/crewAIInc/crewAI) for producing a brilliant AI Agent framework.
-- [João Moura](https://github.com/joaodmoura) for having personally explained many concepts to me.
+- [João Moura](https://github.com/joaomdmoura) for having personally explained many concepts to me.

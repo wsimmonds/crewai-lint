@@ -1,9 +1,31 @@
 import * as vscode from 'vscode';
-import * as yaml from 'js-yaml';
 import * as path from 'path';
 import * as fs from 'fs/promises';
 import { SchemaManager } from './schemaManager';
 import { ValidationError, ValidationResult } from './types/schema';
+
+// Define a type for yaml functions we use
+interface YamlModule {
+  load: (text: string, options?: any) => any;
+  dump: (obj: any, options?: any) => string;
+}
+
+// Try to load js-yaml from node_modules first, then fall back to bundled version
+let yaml: YamlModule;
+try {
+  yaml = require('js-yaml');
+} catch (error) {
+  try {
+    // If the standard path fails, try our bundled version
+    const extensionPath = vscode.extensions.getExtension('williamsimmonds.crewai-lint')?.extensionPath || __dirname;
+    const bundledYamlPath = path.join(extensionPath, 'out', 'js-yaml', 'index.js');
+    yaml = require(bundledYamlPath);
+    console.log('Using bundled js-yaml');
+  } catch (fallbackError) {
+    console.error('Failed to load js-yaml from both locations:', fallbackError);
+    throw new Error('Could not load js-yaml dependency. Extension cannot function.');
+  }
+}
 
 // Define interfaces for working with documents
 interface AgentsConfig {
